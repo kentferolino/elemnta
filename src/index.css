@@ -50,3 +50,7 @@
 
 @layer base {
 }
+
+@theme {
+  --color-primary: #3890c8;
+}

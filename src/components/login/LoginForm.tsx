@@ -10,6 +10,7 @@ import { Eye, EyeOff } from "lucide-react";
 import { Input } from "../ui/input";
 import { Button } from "../ui/button";
 import { validationSchema } from "./validation";
+import { toast } from "sonner";
 
 const LoginForm = () => {
   const [showPassword, setShowPassword] = useState(false);
@@ -29,8 +30,10 @@ const LoginForm = () => {
         dispatch(setCredentials({ token: result.token }));
         navigate("/dashboard");
       } catch (error) {
-        // TODO: Add error handling
         console.error("Failed to login:", error);
+        toast.error("Invalid email or password", {
+          description: "Please check your credentials and try again.",
+        });
       }
     },
   });
@@ -90,9 +93,9 @@ const LoginForm = () => {
           />
           <Button
             type="button"
-            variant="destructive"
+            variant="ghost"
             size="icon"
-            className="absolute right-0 top-0 h-full px-3 py-2 hover:bg-transparent"
+            className="absolute right-0 top-0 h-full px-3 py-2 text-muted-foreground hover:text-foreground hover:bg-transparent"
             onClick={() => setShowPassword(!showPassword)}
           >
             {showPassword ? (
@@ -106,7 +109,7 @@ const LoginForm = () => {
           <p className="text-sm text-destructive">{formik.errors.password}</p>
         )}
       </div>
-      <Button type="submit" className="w-full">
+      <Button type="submit" variant="default" className="w-full">
         Sign in
       </Button>
     </form>
