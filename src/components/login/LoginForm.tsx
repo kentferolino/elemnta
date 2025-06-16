@@ -27,7 +27,8 @@ const LoginForm = () => {
     onSubmit: async (values) => {
       try {
         const result = await login(values).unwrap();
-        dispatch(setCredentials({ token: result.token }));
+        console.log("result", result);
+        dispatch(setCredentials({ authToken: result.authToken }));
         navigate("/dashboard");
       } catch (error) {
         console.error("Failed to login:", error);

@@ -4,23 +4,32 @@ import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 const { VITE_API_AUTH_URL } = import.meta.env;
 
 interface AuthState {
-  token: string | null;
+  authToken: string | null;
   isAuthenticated: boolean;
 }
 
+const persistedToken = localStorage.getItem("authToken");
+
 const initialState: AuthState = {
-  token: null,
-  isAuthenticated: false,
+  authToken: persistedToken,
+  isAuthenticated: !!persistedToken,
 };
 
 export const authApi = createApi({
   reducerPath: "authApi",
   baseQuery: fetchBaseQuery({
     baseUrl: VITE_API_AUTH_URL,
+    prepareHeaders: (headers, { getState }) => {
+      const authToken = (getState() as { auth: AuthState }).auth.authToken;
+      if (authToken) {
+        headers.set("authorization", `Bearer ${authToken}`);
+      }
+      return headers;
+    },
   }),
   endpoints: (builder) => ({
     login: builder.mutation<
-      { token: string },
+      { authToken: string },
       { email: string; password: string }
     >({
       query: (credentials) => ({
@@ -38,13 +47,15 @@ const authSlice = createSlice({
   name: "auth",
   initialState,
   reducers: {
-    setCredentials: (state, { payload: { token } }) => {
-      state.token = token;
+    setCredentials: (state, { payload: { authToken } }) => {
+      state.authToken = authToken;
       state.isAuthenticated = true;
+      localStorage.setItem("authToken", authToken);
     },
     logout: (state) => {
-      state.token = null;
+      state.authToken = null;
       state.isAuthenticated = false;
+      localStorage.removeItem("authToken");
     },
   },
 });

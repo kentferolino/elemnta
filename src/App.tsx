@@ -1,25 +1,42 @@
-import {
-  BrowserRouter as Router,
-  Routes,
-  Route,
-  Navigate,
-} from "react-router-dom";
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import { Provider } from "react-redux";
-import { store } from "./store/store";
+import { store } from "./store";
+import { Toaster } from "sonner";
 import Login from "./pages/Login";
 import Dashboard from "./pages/Dashboard";
-import { Toaster } from "sonner";
+import ProtectedRoute from "./components/auth/ProtectedRoute";
 
 function App() {
   return (
     <Provider store={store}>
       <Router>
         <Routes>
-          <Route path="/login" element={<Login />} />
-          <Route path="/dashboard" element={<Dashboard />} />
-          <Route path="/" element={<Navigate to="/login" replace />} />
+          <Route
+            path="/login"
+            element={
+              <ProtectedRoute requireAuth={false}>
+                <Login />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/dashboard"
+            element={
+              <ProtectedRoute>
+                <Dashboard />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/"
+            element={
+              <ProtectedRoute>
+                <Dashboard />
+              </ProtectedRoute>
+            }
+          />
         </Routes>
-        <Toaster richColors position="top-right" />
+        <Toaster />
       </Router>
     </Provider>
   );
