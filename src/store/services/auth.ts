@@ -1,5 +1,7 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 import type { AuthState } from "../types/auth";
+import type { UserDetails } from "@/types/user";
+
 const { VITE_API_AUTH_URL } = import.meta.env;
 
 export const authApi = createApi({
@@ -14,6 +16,7 @@ export const authApi = createApi({
       return headers;
     },
   }),
+  tagTypes: ["User"],
   endpoints: (builder) => ({
     login: builder.mutation<
       { authToken: string },
@@ -25,7 +28,11 @@ export const authApi = createApi({
         body: credentials,
       }),
     }),
+    getUserDetails: builder.query<UserDetails, void>({
+      query: () => "/auth/me",
+      providesTags: ["User"],
+    }),
   }),
 });
 
-export const { useLoginMutation } = authApi;
+export const { useLoginMutation, useGetUserDetailsQuery } = authApi;

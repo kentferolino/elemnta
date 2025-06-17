@@ -3,13 +3,18 @@ import PeopleTable from "@/components/people/PeopleTable";
 import { useAuth } from "@/hooks";
 
 const Dashboard = () => {
-  const { handleLogout } = useAuth();
+  const { handleLogout, user } = useAuth();
 
   return (
     <div className="min-h-screen bg-gray-50 p-8">
-      <div className="max-w-7xl mx-auto">
+      <div className="mx-auto">
         <div className="flex justify-between items-center mb-4">
-          <h1 className="text-3xl font-bold text-gray-900">Dashboard</h1>
+          <div>
+            <h1 className="text-3xl font-bold text-gray-900">Dashboard</h1>
+            {user && (
+              <p className="text-gray-600 mt-1">Welcome back, {user.name}</p>
+            )}
+          </div>
           <Button onClick={handleLogout} variant="outline">
             Logout
           </Button>
