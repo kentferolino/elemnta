@@ -1,20 +1,11 @@
-import {
-  Table,
-  TableBody,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
+import { Table, TableBody } from "@/components/ui/table";
 import {
   useGetPeopleQuery,
   useDeletePeopleMutation,
 } from "@/store/services/person";
 import { Button } from "@/components/ui/button";
-import { Checkbox } from "@/components/ui/checkbox";
 import { useState } from "react";
-import PeopleTableRow from "./PeopleTableRow";
 import { toast } from "sonner";
-import CreatePersonForm from "./createPersonForm/CreatePersonForm";
 import {
   Dialog,
   DialogContent,
@@ -22,6 +13,14 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
+import { useTableControls } from "@/hooks/useTableControls";
+import type { Person } from "@/types/person";
+import PeopleTableHeader from "./PeopleTableHeader";
+import PeopleTableRow from "./PeopleTableRow";
+import CreatePersonForm from "./createPersonForm/CreatePersonForm";
+import TablePagination from "../common/TablePagination";
+
+type SortField = "first_name" | "last_name";
 
 const PeopleTable = () => {
   const { data: people, isLoading, error } = useGetPeopleQuery();
@@ -29,9 +28,24 @@ const PeopleTable = () => {
   const [selectedRows, setSelectedRows] = useState<string[]>([]);
   const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
 
+  const {
+    tableData,
+    currentPage,
+    pageSize,
+    totalPages,
+    sortField,
+    sortOrder,
+    handleSort,
+    setCurrentPage,
+    handlePageSizeChange,
+  } = useTableControls<Person, SortField>({
+    data: people || [],
+    defaultSortField: "first_name",
+  });
+
   const handleSelectAll = (checked: boolean) => {
     if (checked) {
-      setSelectedRows(people?.map((person) => person.id) || []);
+      setSelectedRows(tableData.map((person) => person.id));
     } else {
       setSelectedRows([]);
     }
@@ -88,30 +102,17 @@ const PeopleTable = () => {
       </div>
       <div className="rounded-md border">
         <Table>
-          <TableHeader>
-            <TableRow>
-              <TableHead className="w-[50px]">
-                <Checkbox
-                  checked={selectedRows.length === (people?.length || 0)}
-                  onCheckedChange={handleSelectAll}
-                />
-              </TableHead>
-              <TableHead>First name</TableHead>
-              <TableHead>Name</TableHead>
-              <TableHead>Preferred Name</TableHead>
-              <TableHead>Date of Birth</TableHead>
-              <TableHead>Gender</TableHead>
-              <TableHead>Marital Status</TableHead>
-              <TableHead>Mobile</TableHead>
-              <TableHead>Home Email</TableHead>
-              <TableHead>Office Email</TableHead>
-              <TableHead className="w-[100px]">Actions</TableHead>
-            </TableRow>
-          </TableHeader>
+          <PeopleTableHeader
+            sortField={sortField}
+            sortOrder={sortOrder}
+            onSort={handleSort}
+            selectedCount={selectedRows.length}
+            totalCount={tableData.length}
+            onSelectAll={handleSelectAll}
+          />
           <TableBody>
-            {people?.map((person) => {
+            {tableData.map((person) => {
               const { id } = person;
-
               return (
                 <PeopleTableRow
                   key={id}
@@ -126,6 +127,14 @@ const PeopleTable = () => {
           </TableBody>
         </Table>
       </div>
+      <TablePagination
+        currentPage={currentPage}
+        pageSize={pageSize}
+        totalItems={(people || []).length}
+        onPageChange={setCurrentPage}
+        onPageSizeChange={handlePageSizeChange}
+        totalPages={totalPages}
+      />
     </div>
   );
 };
