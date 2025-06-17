@@ -1,12 +1,10 @@
 import { useFormik } from "formik";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import {
-  useLoginMutation,
-  setCredentials,
-} from "../../store/features/authSlice";
 import { useDispatch } from "react-redux";
 import { Eye, EyeOff } from "lucide-react";
+import { useLoginMutation } from "@/store/services/auth";
+import { setCredentials } from "../../store/slices/authSlice";
 import { Input } from "../ui/input";
 import { Button } from "../ui/button";
 import { validationSchema } from "./validation";

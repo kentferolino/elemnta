@@ -1,24 +1,9 @@
-import { useSelector, useDispatch } from "react-redux";
-import type { RootState } from "../store/store";
-import { useNavigate } from "react-router-dom";
-import { useEffect } from "react";
-import { logout } from "@/store/features/authSlice";
 import { Button } from "@/components/ui/button";
+import PeopleTable from "@/components/people/PeopleTable";
+import { useAuth } from "@/hooks";
 
 const Dashboard = () => {
-  const { isAuthenticated } = useSelector((state: RootState) => state.auth);
-  const navigate = useNavigate();
-  const dispatch = useDispatch();
-
-  useEffect(() => {
-    if (!isAuthenticated) {
-      navigate("/login");
-    }
-  }, [isAuthenticated, navigate]);
-
-  const handleLogout = () => {
-    dispatch(logout());
-  };
+  const { handleLogout } = useAuth();
 
   return (
     <div className="min-h-screen bg-gray-50 p-8">
@@ -29,7 +14,10 @@ const Dashboard = () => {
             Logout
           </Button>
         </div>
-        <p className="mt-4 text-gray-600">Welcome to your dashboard!</p>
+        <div className="mt-8">
+          <h2 className="text-2xl font-semibold mb-4">People</h2>
+          <PeopleTable />
+        </div>
       </div>
     </div>
   );
